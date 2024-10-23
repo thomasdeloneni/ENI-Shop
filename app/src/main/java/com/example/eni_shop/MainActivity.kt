@@ -37,6 +37,9 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.eni_shop.bo.Article
 import com.example.eni_shop.repository.ArticleRepository
+import com.example.eni_shop.ui.screen.ArticleDetailScreen
+import com.example.eni_shop.ui.screen.FormScreen
+import com.example.eni_shop.ui.theme.ENIShopTheme
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -49,7 +52,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            ArticleDetailScreen(article = ArticleRepository.getArticleById(2)!!)
+            ENIShopTheme {
+
+                FormScreen()
+            }
         }
 
         val article = ArticleRepository.getArticleById(1)
@@ -61,97 +67,4 @@ class MainActivity : ComponentActivity() {
         Log.i(TAG, ArticleRepository.getArticleById(id).toString())
 
     }
-}
-
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Composable
-fun ArticleDetailScreen(article: Article, modifier: Modifier = Modifier) {
-    Scaffold(
-        topBar = { AppTopBar() },
-        content = {paddingValues ->
-            Column(modifier = modifier.fillMaxHeight().padding(paddingValues),
-                verticalArrangement = Arrangement.SpaceBetween) {
-                ArticleContent(article)
-            }
-        }
-    )
-}
-
-@Composable
-private fun ArticleContent(article: Article) {
-    val isChecked = remember { mutableStateOf(false) }
-    Text(
-        text = "${article.name}!",
-        fontSize = 28.sp, modifier = Modifier.padding(16.dp)
-    )
-    AsyncImage(
-        model = article.urlImage,
-        contentDescription = null,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-            .padding(16.dp)
-    )
-    Text("Description: ${article.description}", modifier = Modifier.padding(16.dp))
-    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-        Text("Prix: ${article.price} €", modifier = Modifier.padding(16.dp))
-        Spacer(modifier = Modifier.width(16.dp))
-        Text("Date de Sortie: ${article.date.formatDateToFR()}", modifier = Modifier.padding(16.dp))
-    }
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Checkbox(checked = isChecked.value, onCheckedChange = { checked ->  isChecked.value = checked })
-        Spacer(modifier = Modifier.width(16.dp))
-        Text("Favoris", modifier = Modifier.clickable { })
-    }
-}
-
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-private fun AppTopBar() {
-    TopAppBar(
-        title = {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ShoppingCart,
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "ENI Shop")
-                }
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary
-        )
-    )
-}
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun Preview(){
-//    val article = ArticleRepository.getArticleById(2)
-//    if (article != null) {
-//        ArticleDetailScreen(article = article)
-//    }
-//}
-
-fun Date.formatDateToFR(): String {
-    val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.FRENCH)
-    return dateFormat.format(this)
 }
