@@ -5,7 +5,7 @@ import com.example.eni_shop.dao.ArticleDao
 import com.example.eni_shop.dao.DaoFactory
 import com.example.eni_shop.dao.DaoType
 
-object ArticleRepository
+class ArticleRepository
 {
     private val articleDao: ArticleDao = DaoFactory.createArticleDao(DaoType.MEMORY)
 

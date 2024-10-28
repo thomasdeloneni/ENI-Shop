@@ -32,7 +32,7 @@ import com.example.eni_shop.utils.toFrenchDate
 fun ArticleDetailScreen(modifier: Modifier = Modifier) {
     Scaffold(topBar = { EniShopTopBar() }) {
         Column(modifier = Modifier.padding(it)) {
-            val article = ArticleRepository.getArticleById(1)
+            val article = ArticleRepository().getArticleById(1)
             if (article != null) {
                 ArticleDetail(article = article)
             }
