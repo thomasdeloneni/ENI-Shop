@@ -8,23 +8,15 @@ import com.example.eni_shop.repository.ArticleRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class ArticleListViewModel(private val articleRepository: ArticleRepository) : ViewModel() {
-    private val _categories = MutableStateFlow<List<String>>(emptyList())
-    val categories : StateFlow<List<String>>
-        get() = _categories
+class ArticleDetailViewModel(private val articleRepository: ArticleRepository) : ViewModel() {
+    private val _article = MutableStateFlow<Article?>(null)
+    val article: StateFlow<Article?> = _article
 
-    private val _articles = MutableStateFlow<List<Article>>(emptyList())
-    val articles = _articles as StateFlow<List<Article>>
-
-
-
-    init {
-        _articles.value = articleRepository.getAllArticles()
-        _categories.value = listOf("electronics", "jewelery", "men's clothing", "women's clothing")
+    fun getArticleById(id: Long) {
+        _article.value = articleRepository.getArticleById(id)
     }
 
     companion object {
-
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(
