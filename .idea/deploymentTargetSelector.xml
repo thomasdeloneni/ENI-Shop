@@ -15,7 +15,7 @@
       </SelectionState>
       <SelectionState runConfigName="MainActivity">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-10-23T08:29:58.225588200Z">
+        <DropdownSelection timestamp="2024-10-29T08:47:03.335139800Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\tdelon2023\.android\avd\Pixel_8_API_33.avd" />
@@ -48,6 +48,14 @@
       </SelectionState>
       <SelectionState runConfigName="articleDetailScreenIsWorking()">
         <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2024-10-29T08:46:24.513470400Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\tdelon2023\.android\avd\Pixel_8_API_33.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="ArticleDetailScreenTest">
         <option name="selectionMode" value="DROPDOWN" />

@@ -38,5 +38,4 @@ class ArticleDetailScreenTest {
             .assertExists("Titre non trouvé")
             .assertTextEquals("Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops")
     }
-
 }

@@ -31,7 +31,7 @@ class ArticleListViewModel(private val articleRepository: ArticleRepository) : V
                 modelClass: Class<T>,
                 extras: CreationExtras
             ): T {
-                return ArticleDetailViewModel(
+                return ArticleListViewModel(
                     ArticleRepository()
                 ) as T
             }

@@ -23,17 +23,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.example.eni_shop.ui.common.BackButton
 import com.example.eni_shop.ui.common.DropDownMenuCategories
 import com.example.eni_shop.ui.common.EniShopTextField
 import com.example.eni_shop.ui.common.EniShopTopBar
 
 @Composable
-fun ArticleFormScreen() {
+fun ArticleFormScreen(onBackClick: () -> Unit) {
     val context = LocalContext.current
     var title by rememberSaveable() { mutableStateOf("") }
 
-    Scaffold(topBar = { EniShopTopBar() }
-    ) {
+    Scaffold(topBar = { EniShopTopBar(backButton = { BackButton(onBackClick) }) }) {
+
         Column(modifier = Modifier
             .padding(it)
             .verticalScroll(rememberScrollState()),
@@ -85,5 +87,4 @@ fun ArticleForm(modifier : Modifier = Modifier, title : String, onTitleChange : 
 @Preview
 @Composable
 fun FormPreview() {
-    ArticleFormScreen()
 }

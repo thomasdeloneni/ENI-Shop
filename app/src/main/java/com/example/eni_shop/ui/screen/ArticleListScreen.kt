@@ -2,7 +2,9 @@ package com.example.eni_shop.ui.screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -15,9 +17,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Card
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -45,6 +50,8 @@ import com.example.eni_shop.viewModel.ArticleListViewModel
 
 @Composable
 fun ArticleListScreen(
+    onNavigateToArticleDetail: (Long) -> Unit,
+    onNavigateToAddArticle: () -> Unit,
     viewModel: ArticleListViewModel = viewModel(factory = ArticleListViewModel.Factory)
 ) {
     val categories by viewModel.categories.collectAsState()
@@ -57,16 +64,19 @@ fun ArticleListScreen(
         articles
     }
 
-    Scaffold(topBar = { EniShopTopBar() }) {
-        Column(modifier = Modifier
-            .padding(it)
-            .padding(horizontal = 8.dp)) {
+    Scaffold(topBar = { EniShopTopBar() },
+        floatingActionButton = { ArticleListFAB(onNavigateToAddArticle) }) {
+        Column(
+            modifier = Modifier
+                .padding(it)
+                .padding(horizontal = 8.dp)
+        ) {
             CategoryFilterChip(categories = categories,
                 selectedCategory = category,
-                onCategoryChange = {selectedCategory ->
+                onCategoryChange = { selectedCategory ->
                     category = selectedCategory
                 })
-            ArticleList(articles = filteredArticles)
+            ArticleList(articles = filteredArticles, onNavigateToArticleDetail)
         }
     }
 
@@ -105,25 +115,28 @@ fun CategoryFilterChip(
 }
 
 @Composable
-fun ArticleList(articles: List<Article>) {
+fun ArticleList(articles: List<Article>, onArticleClick: (Long) -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         items(articles) { article ->
-            ArticleItem(article = article)
+            ArticleItem(article = article, onArticleClick = onArticleClick)
         }
     }
 }
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun ArticleItem(article: Article, modifier: Modifier = Modifier) {
+fun ArticleItem(article: Article, modifier: Modifier = Modifier, onArticleClick: (Long) -> Unit) {
     Card(
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-    ) {
+        modifier = modifier.clickable {
+            onArticleClick(article.id)
+        })
+    {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(vertical = 4.dp)
@@ -146,13 +159,28 @@ fun ArticleItem(article: Article, modifier: Modifier = Modifier) {
                 textAlign = TextAlign.Justify,
                 modifier = Modifier.padding(8.dp)
             )
-            Text(text = "${String.format("%.2f", article.price) } €")
+            Text(text = "${String.format("%.2f", article.price)} €")
         }
+    }
+}
+
+@Composable
+fun ArticleListFAB(onAddArticleClick: () -> Unit) {
+    FloatingActionButton(
+        onClick = onAddArticleClick,
+        shape = CircleShape,
+        elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 4.dp)
+    ) {
+        Image(
+            imageVector = Icons.Default.Add,
+            contentDescription = "Add Article",
+            modifier = Modifier.size(40.dp)
+        )
     }
 }
 
 @Composable
 @Preview
 fun ArticleListScreenPreview() {
-    ArticleListScreen()
+
 }

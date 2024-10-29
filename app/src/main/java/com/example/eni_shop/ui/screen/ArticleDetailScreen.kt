@@ -30,14 +30,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.eni_shop.bo.Article
+import com.example.eni_shop.ui.common.BackButton
 import com.example.eni_shop.ui.common.EniShopTopBar
 import com.example.eni_shop.utils.toFrenchDate
 import com.example.eni_shop.viewModel.ArticleDetailViewModel
 
 @Composable
 fun ArticleDetailScreen(
+    onBackClick: () -> Unit,
     articleId: Long,
     articleViewModel: ArticleDetailViewModel = viewModel(factory = ArticleDetailViewModel.Factory)
 ) {
@@ -47,7 +50,7 @@ fun ArticleDetailScreen(
         articleViewModel.getArticleById(articleId)
     }
 
-    Scaffold(topBar = { EniShopTopBar() }) { it ->
+    Scaffold(topBar = { EniShopTopBar(backButton = { BackButton(onBackClick) }) }) { it ->
         Column(modifier = Modifier.padding(it)) {
             article?.let { article ->
                 ArticleDetail(article = article)
