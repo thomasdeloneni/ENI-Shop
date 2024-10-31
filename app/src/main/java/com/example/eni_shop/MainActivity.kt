@@ -5,18 +5,25 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.eni_shop.datastore.DataStoreManager
 import com.example.eni_shop.nav.ArticleDetailDestination
 import com.example.eni_shop.nav.ArticleFormDestination
 import com.example.eni_shop.nav.ArticleListDestination
+import com.example.eni_shop.ui.common.NavigationBackIcon
 import com.example.eni_shop.ui.screen.ArticleDetailScreen
 import com.example.eni_shop.ui.screen.ArticleFormScreen
 import com.example.eni_shop.ui.screen.ArticleListScreen
-import com.example.eni_shop.ui.theme.ENIShopTheme
-
+import com.example.eni_shop.ui.theme.EnishopTheme
 
 private const val TAG = "MainActivity"
 
@@ -24,54 +31,90 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
-            ENIShopTheme {
+
+            var isDarkModeActivated by rememberSaveable {
+                mutableStateOf(false)
+            }
+
+            LaunchedEffect(Unit) {
+                DataStoreManager.isDarkModeActivated(this@MainActivity).collect {
+                    isDarkModeActivated = it
+                }
+            }
+
+            EnishopTheme(darkTheme = isDarkModeActivated) {
                 EniShopApp()
             }
         }
     }
 }
 
-
 @Composable
 fun EniShopApp() {
     val navController = rememberNavController()
-
     EniShopNavHost(navController = navController)
 }
 
 @Composable
 fun EniShopNavHost(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = ArticleListDestination.route) {
+
+    NavHost(
+        navController = navController,
+        startDestination = ArticleListDestination.route
+    ) {
         composable(route = ArticleListDestination.route) {
             ArticleListScreen(
-                onNavigateToArticleDetail = { articleId ->
-                    navController.navigate("${ArticleDetailDestination.route}/$articleId")
-                },
                 onNavigateToAddArticle = {
                     navController.navigate(ArticleFormDestination.route)
+                },
+                onNavigateToArticleDetail = { articleId ->
+                    navController.navigate("${ArticleDetailDestination.route}/$articleId")
                 }
             )
         }
-        composable(
-            route = ArticleDetailDestination.routeWithArgs,
-            arguments = ArticleDetailDestination.args
-        ) { backStackEntry ->
-            val articleId = backStackEntry.arguments?.getLong(ArticleDetailDestination.argName)
-            if (articleId != null) {
-                ArticleDetailScreen(
-                    articleId = articleId,
-                    onBackClick = { navController.popBackStack() }
-                )
-            }
-        }
         composable(route = ArticleFormDestination.route) {
-
-            ArticleFormScreen(onBackClick = {
-                if(navController.previousBackStackEntry != null){
-                    navController.popBackStack()
+            ArticleFormScreen(navigationIcon = {
+                if (navController.previousBackStackEntry != null) {
+                    NavigationBackIcon(onClickToBack = {
+                        navController.popBackStack()
+                    })
                 }
             })
         }
+
+        composable(
+            route = ArticleDetailDestination.routeWithArgs,
+            arguments = ArticleDetailDestination.arguments
+        ) {
+
+            val articleId = it.arguments?.getLong(ArticleDetailDestination.argName)
+            ArticleDetailScreen(
+                articleId = articleId!!,
+                navigationIcon = {
+                    if (navController.previousBackStackEntry != null) {
+                        NavigationBackIcon(onClickToBack = {
+                            navController.popBackStack()
+                        })
+                    }
+                }
+            )
+        }
     }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

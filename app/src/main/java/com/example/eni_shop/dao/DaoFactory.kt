@@ -1,15 +1,23 @@
 package com.example.eni_shop.dao
 
-import com.example.eni_shop.dao.memory.ArticleDaoMemoryImpl
-import com.example.eni_shop.dao.network.ArticleDaoNetworkImpl
+import com.example.eni_shop.dao.memory.ArticleDAOMemoryImpl
 
 abstract class DaoFactory {
+
     companion object {
-        fun createArticleDao(type: DaoType): ArticleDao {
-            return when (type) {
-                DaoType.MEMORY -> ArticleDaoMemoryImpl()
-                DaoType.NETWORK -> ArticleDaoNetworkImpl()
+
+        fun createArticleDao(type: DaoType): ArticleDAO {
+
+            val dao: ArticleDAO
+
+            when (type) {
+                DaoType.MEMORY -> dao = ArticleDAOMemoryImpl()
+                DaoType.NETWORK -> TODO()
             }
+
+            return dao;
         }
     }
+
+
 }

@@ -12,22 +12,22 @@ object ArticleListDestination : Destination{
         get() = "articleList"
 }
 
+object ArticleFormDestination : Destination{
+    override val route: String
+        get() = "articleForm"
+}
+
 object ArticleDetailDestination : Destination{
     override val route: String
         get() = "articleDetail"
 
     val argName = "articleId"
 
-    val args = listOf(
+    val arguments = listOf(
         navArgument(argName){
             type = NavType.LongType
         }
     )
 
     val routeWithArgs = "$route/{$argName}"
-}
-
-object ArticleFormDestination : Destination{
-    override val route: String
-        get() = "articleForm"
 }

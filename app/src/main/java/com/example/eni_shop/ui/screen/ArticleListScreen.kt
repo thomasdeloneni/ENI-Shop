@@ -1,6 +1,5 @@
 package com.example.eni_shop.ui.screen
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -25,7 +24,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -44,99 +42,88 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.eni_shop.bo.Article
-import com.example.eni_shop.ui.common.EniShopTopBar
-import com.example.eni_shop.viewModel.ArticleListViewModel
-
+import com.example.eni_shop.ui.common.EniShopScaffold
+import com.example.eni_shop.vm.ArticleListViewModel
 
 @Composable
 fun ArticleListScreen(
-    onNavigateToArticleDetail: (Long) -> Unit,
+    articleListViewModel: ArticleListViewModel = viewModel(factory = ArticleListViewModel.Factory),
     onNavigateToAddArticle: () -> Unit,
-    viewModel: ArticleListViewModel = viewModel(factory = ArticleListViewModel.Factory)
+    onNavigateToArticleDetail: (Long) -> Unit
 ) {
-    val categories by viewModel.categories.collectAsState()
-    val articles by viewModel.articles.collectAsState()
-    var category by remember { mutableStateOf("") }
+
+    val articles by articleListViewModel.articles.collectAsState()
+    val categories by articleListViewModel.categories.collectAsState()
+
+    var category by remember {
+        mutableStateOf("")
+    }
 
     val filteredArticles = if (category != "") {
-        articles.filter { it.category == category }
+        articles.filter {
+            it.category == category
+        }
     } else {
         articles
     }
 
-    Scaffold(topBar = { EniShopTopBar() },
-        floatingActionButton = { ArticleListFAB(onNavigateToAddArticle) }) {
+    EniShopScaffold(
+        floatingActionButton = { ArticleListFAB(onNavigateToAddArticle = onNavigateToAddArticle) }
+    ) {
         Column(
             modifier = Modifier
-                .padding(it)
                 .padding(horizontal = 8.dp)
         ) {
-            CategoryFilterChip(categories = categories,
+            CategoryFilterChip(
+                categories = categories,
                 selectedCategory = category,
                 onCategoryChange = { selectedCategory ->
                     category = selectedCategory
-                })
-            ArticleList(articles = filteredArticles, onNavigateToArticleDetail)
-        }
-    }
-
-}
-
-@Composable
-fun CategoryFilterChip(
-    categories: List<String>,
-    selectedCategory: String,
-    onCategoryChange: (String) -> Unit
-) {
-
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.padding(8.dp)
-    ) {
-        items(categories) {
-            FilterChip(
-                selected = selectedCategory == it,
-                onClick = {
-                    if (selectedCategory != it) {
-                        onCategoryChange(it)
-                    } else {
-                        onCategoryChange("")
-                    }
-                },
-                label = { Text(text = it) },
-                leadingIcon = if (selectedCategory == it) {
-                    { Icon(imageVector = Icons.Default.Done, contentDescription = "Checked") }
-                } else {
-                    null
-                },
+                }
+            )
+            ArticleList(
+                articles = filteredArticles,
+                onNavigateToArticleDetail = onNavigateToArticleDetail
             )
         }
     }
+
+
 }
 
 @Composable
-fun ArticleList(articles: List<Article>, onArticleClick: (Long) -> Unit) {
+fun ArticleList(
+    articles: List<Article>,
+    onNavigateToArticleDetail: (Long) -> Unit
+) {
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         items(articles) { article ->
-            ArticleItem(article = article, onArticleClick = onArticleClick)
+            ArticleItem(article = article, onNavigateToArticleDetail = onNavigateToArticleDetail)
         }
     }
+
+
 }
 
-@SuppressLint("DefaultLocale")
 @Composable
-fun ArticleItem(article: Article, modifier: Modifier = Modifier, onArticleClick: (Long) -> Unit) {
+fun ArticleItem(
+    modifier: Modifier = Modifier,
+    article: Article,
+    onNavigateToArticleDetail: (Long) -> Unit
+) {
+
     Card(
+        modifier = Modifier.clickable {
+            onNavigateToArticleDetail(article.id)
+        },
         shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-        modifier = modifier.clickable {
-            onArticleClick(article.id)
-        })
-    {
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+    ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(vertical = 4.dp)
@@ -160,27 +147,63 @@ fun ArticleItem(article: Article, modifier: Modifier = Modifier, onArticleClick:
                 modifier = Modifier.padding(8.dp)
             )
             Text(text = "${String.format("%.2f", article.price)} €")
+
+        }
+
+    }
+
+}
+
+@Composable
+fun CategoryFilterChip(
+    categories: List<String>,
+    selectedCategory: String,
+    onCategoryChange: (String) -> Unit
+) {
+
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        items(categories) { category ->
+            FilterChip(
+                selected = selectedCategory == category,
+                onClick = {
+                    if (selectedCategory != category) {
+                        onCategoryChange(category)
+                    } else {
+                        onCategoryChange("")
+                    }
+
+                },
+                label = { Text(text = category) },
+                leadingIcon = if (selectedCategory == category) {
+                    { Icon(imageVector = Icons.Default.Done, contentDescription = null) }
+                } else {
+                    null
+                }
+            )
         }
     }
 }
 
 @Composable
-fun ArticleListFAB(onAddArticleClick: () -> Unit) {
+fun ArticleListFAB(onNavigateToAddArticle: () -> Unit) {
+
     FloatingActionButton(
-        onClick = onAddArticleClick,
+        onClick = onNavigateToAddArticle,
         shape = CircleShape,
         elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 4.dp)
     ) {
         Image(
             imageVector = Icons.Default.Add,
-            contentDescription = "Add Article",
+            contentDescription = "Add article",
             modifier = Modifier.size(40.dp)
         )
     }
+
 }
+
 
 @Composable
 @Preview
-fun ArticleListScreenPreview() {
-
+fun ArticleListPreview() {
+    // ArticleListScreen()
 }
