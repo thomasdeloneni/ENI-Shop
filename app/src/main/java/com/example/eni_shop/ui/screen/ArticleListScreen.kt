@@ -6,6 +6,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -18,11 +20,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -68,7 +74,11 @@ fun ArticleListScreen(
     }
 
     EniShopScaffold(
-        floatingActionButton = { ArticleListFAB(onNavigateToAddArticle = onNavigateToAddArticle) }
+        floatingActionButton = { ArticleListFAB(onNavigateToAddArticle = onNavigateToAddArticle) },
+        bottomBar = { ArticleListBottomBar(
+            onClickToHome = {articleListViewModel.getArticles()},
+            onClickToFav = { articleListViewModel.getArticlesFav() }
+        ) }
     ) {
         Column(
             modifier = Modifier
@@ -201,9 +211,32 @@ fun ArticleListFAB(onNavigateToAddArticle: () -> Unit) {
 
 }
 
+@Composable
+fun ArticleListBottomBar(onClickToHome : () -> Unit, onClickToFav : () -> Unit) {
+
+    BottomAppBar() {
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center) {
+            IconButton(onClick = onClickToHome) {
+                Icon(
+                    imageVector = Icons.Default.Home,
+                    contentDescription = "Home",
+                    modifier = Modifier.size(40.dp))
+            }
+            IconButton(onClick = onClickToFav) {
+                Icon(
+                    imageVector = Icons.Default.FavoriteBorder,
+                    contentDescription = "Favorites",
+                    modifier = Modifier.size(40.dp))
+            }
+        }
+    }
+
+}
+
 
 @Composable
 @Preview
 fun ArticleListPreview() {
-    // ArticleListScreen()
+    // ArticleListBottomBar()
 }

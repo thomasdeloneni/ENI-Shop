@@ -55,5 +55,9 @@ class ArticleDAOMemoryImpl : ArticleDAO {
         return articlesInMemory
     }
 
+    override fun delete(article: Article) {
+        articlesInMemory.remove(article)
+    }
+
 
 }
